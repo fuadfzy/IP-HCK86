@@ -53,6 +53,7 @@ app.use('/sessions', sessionsRouter);
 app.use('/orders', ordersRouter);
 app.use('/payments', paymentsRouter);
 app.use('/order-items', orderItemsRouter);
+app.use('/ai', require('./routes/ai'));
 
 // Health check
 app.get('/', (req, res) => {
