@@ -1,68 +1,93 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* Mobile Optimization CSS - Mobile First Container */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+/* Mobile App Container - Updated for common phone resolutions */
+.mobile-app-container {
+  max-width: 390px; /* iPhone 14 Pro standard width */
+  margin: 0 auto;
   min-height: 100vh;
+  position: relative;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Desktop: Add side borders to simulate mobile */
+@media (min-width: 768px) {
+  body {
+    background: #f8f9fa; /* Light gray background on desktop */
   }
-  a:hover {
-    color: #747bff;
+  
+  .mobile-app-container {
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    box-shadow: 0 0 30px rgba(0,0,0,0.15);
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+/* Text shadow utility */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Safe area untuk mobile notch */
+@supports (padding: max(0px)) {
+  .navbar {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+}
+
+/* Touch friendly buttons */
+@media (max-width: 767.98px) {
+  .btn {
+    min-height: 44px; /* iOS minimum touch target */
+  }
+  
+  .btn-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Smooth scroll for mobile */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, select, textarea {
+  font-size: 16px;
+}
+
+@media (max-width: 767.98px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Override Bootstrap container behavior for mobile-first */
+.container-fluid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Ensure full width within mobile container */
+.mobile-app-container .container,
+.mobile-app-container .container-fluid {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* QR Scanner animations */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
