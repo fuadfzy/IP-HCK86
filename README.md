@@ -5,7 +5,8 @@ A full-stack restaurant ordering system with QR code table identification, AI-dr
 
 ### Features
 - QR code scanning for table/session
-- Google login authentication
+- Google login authentication (OAuth, JWT)
+- All backend API terproteksi JWT (user harus login Google)
 - Chat-based AI food recommendations (OpenAI API)
 - React.js frontend (Vite, Redux, React Router)
 - Node.js/Express backend
@@ -49,7 +50,11 @@ npm run dev # or node index.js
 - `backend/` — Node.js/Express API
 - `database/` — SQL migrations, seeders
 
-## Backend API Endpoints
+## Backend API Endpoints (All endpoints require JWT in Authorization header)
+
+### Auth
+- `GET /auth/google` — Redirect user to Google login
+- `GET /auth/google/callback` — Google OAuth callback, returns JWT and user info
 
 ### Menu
 - `GET /menu-items` — List all menu items
@@ -79,6 +84,10 @@ npm run dev # or node index.js
 
 ### Progress & Next Steps
 - [x] All core backend endpoints implemented and tested
+- [x] Google login (OAuth) & JWT protection for all API
+- [x] Proteksi semua endpoint backend dengan JWT
+- [ ] AI recommendation (OpenAI API)
+- [ ] Frontend integration
 - [x] Midtrans payment integration (sandbox)
 - [x] Order item CRUD with paid order protection
 - [ ] Frontend integration (React, Redux, etc)
