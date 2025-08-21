@@ -2,19 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { Order, OrderItem, MenuItem, Session } = require('../models');
 
-// GET /orders - list orders by session_id or table_id
+// GET /orders - list orders by user (authenticated user only)
 router.get('/', async (req, res) => {
   try {
-    const { session_id, table_id } = req.query;
-    let where = {};
+    const userId = req.user.id; // From JWT token
+    const { session_id } = req.query;
+    
+    let where = { user_id: userId }; // Always filter by user
+    
     if (session_id) {
       where.session_id = session_id;
-    } else if (table_id) {
-      // Find all sessions for this table
-      const sessions = await Session.findAll({ where: { table_id } });
-      const sessionIds = sessions.map(s => s.id);
-      where.session_id = sessionIds;
     }
+    
     const orders = await Order.findAll({
       where,
       include: [
@@ -34,6 +33,7 @@ router.get('/', async (req, res) => {
 // POST /orders - create a new order for a session
 router.post('/', async (req, res) => {
   const { session_id, items } = req.body;
+  const userId = req.user.id; // From JWT token
   // items: [{ menu_item_id, quantity }]
   if (!session_id || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'session_id and items are required' });
@@ -65,6 +65,7 @@ router.post('/', async (req, res) => {
     // Create order
     const order = await Order.create({
       session_id,
+      user_id: userId, // Associate order with logged-in user
       total,
       status: 'pending'
     });
@@ -85,34 +86,22 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /orders/:id - get order details with items
-router.get('/:id', async (req, res) => {
-  try {
-    const order = await Order.findByPk(req.params.id, {
-      include: [
-        {
-          model: OrderItem,
-          include: [MenuItem]
-        }
-      ]
-    });
-    if (!order) return res.status(404).json({ error: 'Order not found' });
-    res.json(order);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch order' });
-  }
-});
-
-// PUT /orders/:id - edit order (only if status is pending)
+// PUT /orders/:id - edit order (only if status is pending and belongs to user)
 router.put('/:id', async (req, res) => {
   const { items } = req.body;
+  const userId = req.user.id; // From JWT token
   // items: [{ menu_item_id, quantity }]
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items are required' });
   }
   
   try {
-    const order = await Order.findByPk(req.params.id);
+    const order = await Order.findOne({
+      where: { 
+        id: req.params.id,
+        user_id: userId // Only allow editing user's own orders
+      }
+    });
     if (!order) return res.status(404).json({ error: 'Order not found' });
     
     // Only allow editing pending orders
@@ -156,10 +145,16 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /orders/:id - delete order (only if status is pending)
+// DELETE /orders/:id - delete order (only if status is pending and belongs to user)
 router.delete('/:id', async (req, res) => {
   try {
-    const order = await Order.findByPk(req.params.id);
+    const userId = req.user.id; // From JWT token
+    const order = await Order.findOne({
+      where: { 
+        id: req.params.id,
+        user_id: userId // Only allow deleting user's own orders
+      }
+    });
     if (!order) return res.status(404).json({ error: 'Order not found' });
     
     // Only allow deleting pending orders
@@ -175,7 +170,7 @@ router.delete('/:id', async (req, res) => {
     // Delete order
     await order.destroy();
 
-    res.json({ message: 'Order deleted successfully', order_id: order.id });
+    res.status(204).send();
   } catch (err) {
     console.error('Delete order error:', err);
     res.status(500).json({ error: 'Failed to delete order' });

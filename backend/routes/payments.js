@@ -25,6 +25,11 @@ router.post('/', async (req, res) => {
     const order = await Order.findByPk(order_id);
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
+    // Check if order is already paid or failed
+    if (order.status === 'paid' || order.status === 'failed') {
+      return res.status(400).json({ error: 'Order is already paid or failed' });
+    }
+
     const parameter = {
       transaction_details: {
         order_id: `ORDER-${order.id}-${Date.now()}`,

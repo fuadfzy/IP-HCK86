@@ -91,3 +91,57 @@ input, select, textarea {
     transform: scale(1);
   }
 }
+
+/* Shimmer effect for menu cards - only on hover */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.shimmer-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.05) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: none;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.shimmer-effect:hover::before {
+  animation: shimmer 1.5s infinite ease-in-out;
+  opacity: 1;
+}
+
+.shimmer-effect:hover {
+  transform: translateY(-2px);
+}
+
+.shimmer-effect > * {
+  position: relative;
+  z-index: 2;
+}

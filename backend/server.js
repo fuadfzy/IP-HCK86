@@ -7,11 +7,9 @@ const jwt = require('jsonwebtoken');
 const { User } = require('./models');
 
 const menuItemsRouter = require('./routes/menuItems');
-const tablesRouter = require('./routes/tables');
 const sessionsRouter = require('./routes/sessions');
 const ordersRouter = require('./routes/orders');
 const paymentsRouter = require('./routes/payments');
-const orderItemsRouter = require('./routes/orderItems');
 
 // Passport Google OAuth setup
 passport.use(new GoogleStrategy({
@@ -51,16 +49,11 @@ app.use('/sessions', sessionsRouter);
 // Payment redirect routes (unprotected - for Midtrans redirects)
 app.use('/payment', require('./routes/paymentRedirect'));
 
-// Payment notification (unprotected - for Midtrans webhooks)
-app.use('/payments/notification', require('./routes/notification'));
-
 // Protect all other API routes
 app.use(authenticateJWT);
 app.use('/menu-items', menuItemsRouter);
-app.use('/tables', tablesRouter);
 app.use('/orders', ordersRouter);
 app.use('/payments', paymentsRouter);
-app.use('/order-items', orderItemsRouter);
 app.use('/ai', require('./routes/ai'));
 
 // Health check
