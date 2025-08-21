@@ -59,7 +59,7 @@ const app = express();
 // CORS configuration for production
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL, process.env.BACKEND_URL]
+    ? ['https://tabletalk-2025.web.app', 'https://fuadfzy.space', process.env.FRONTEND_URL, process.env.BACKEND_URL]
     : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
   optionsSuccessStatus: 200
@@ -88,8 +88,12 @@ app.use('/auth', require('./routes/auth'));
 // Sessions route (unprotected - needed for QR code scanning)
 app.use('/sessions', sessionsRouter);
 
+
 // Payment redirect routes (unprotected - for Midtrans redirects)
 app.use('/payment', require('./routes/paymentRedirect'));
+
+// Unprotected Midtrans notification endpoint (must be before authenticateJWT)
+app.use('/payments/notification', require('./routes/paymentsNotification'));
 
 // Protect all other API routes
 app.use(authenticateJWT);

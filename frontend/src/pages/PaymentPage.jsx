@@ -11,6 +11,7 @@ function PaymentPage() {
   const cartItems = location.state?.cartItems || [];
   const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
   const total = location.state?.total || 0;
+  const sessionId = location.state?.sessionId || localStorage.getItem('sessionId');
   
   // Check if paying for existing order
   const existingOrderId = location.state?.existingOrderId;
@@ -55,8 +56,7 @@ function PaymentPage() {
         // Create new order flow (existing logic)
         
         // First, check if session exists from QR scan
-        let sessionId = localStorage.getItem('sessionId');
-        console.log('Existing sessionId:', sessionId);
+        console.log('Existing sessionId from state or localStorage:', sessionId);
         if (!sessionId) {
           throw new Error('No active session found. Please scan QR code at your table first.');
         }

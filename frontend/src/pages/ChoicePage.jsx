@@ -10,6 +10,8 @@ function ChoicePage() {
   
   // Get user data from location state or localStorage
   const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
+  // Get sessionId from location state or localStorage
+  const sessionId = location.state?.sessionId || localStorage.getItem('sessionId');
 
   // Show alert if there's a message from payment cancellation
   useEffect(() => {
@@ -26,11 +28,11 @@ function ChoicePage() {
   }, [location.state, location.pathname]);
 
   const handleChatWithAI = () => {
-    navigate('/chat', { state: { user } });
+    navigate('/chat', { state: { user, sessionId } });
   };
 
   const handleGoToMenu = () => {
-    navigate('/menu', { state: { user } });
+    navigate('/menu', { state: { user, sessionId } });
   };
 
   const handleViewOrderHistory = () => {

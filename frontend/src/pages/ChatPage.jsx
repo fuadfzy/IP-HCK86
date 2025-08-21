@@ -7,6 +7,7 @@ function ChatPage() {
   
   // Get user data from location state or localStorage
   const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
+  const sessionId = location.state?.sessionId || localStorage.getItem('sessionId');
   
   // Initialize messages with persistence
   const [messages, setMessages] = useState(() => {

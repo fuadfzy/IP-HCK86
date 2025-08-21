@@ -25,6 +25,9 @@ function AuthCallback() {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
         
+        // Get sessionId from localStorage (set by QRSessionPage)
+        const sessionId = localStorage.getItem('sessionId');
+        
         // Small delay for UX
         setTimeout(() => {
           setIsProcessing(false);
@@ -34,7 +37,8 @@ function AuthCallback() {
             navigate('/choice', { 
               state: { 
                 user: userData,
-                loginSuccess: true 
+                loginSuccess: true,
+                sessionId: sessionId // Pass sessionId to choice page
               }
             });
           }, 1000);

@@ -42,6 +42,10 @@ function QRSessionPage() {
       const sessionData = await response.json();
       setSessionData(sessionData);
 
+      // Store sessionId in localStorage for persistence across OAuth flow
+      localStorage.setItem('sessionId', sessionData.id);
+      console.log('SessionId stored in localStorage:', sessionData.id);
+
       // Start countdown timer
       let timeLeft = 5;
       setCountdown(timeLeft);

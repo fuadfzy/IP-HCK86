@@ -34,6 +34,7 @@ function CartPage() {
   });
 
   const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
+  const sessionId = location.state?.sessionId || localStorage.getItem('sessionId');
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -315,7 +316,7 @@ function CartPage() {
                   <>
                     <button 
                       className="btn btn-success fw-semibold"
-                      onClick={() => navigate('/payment', { state: { cartItems, user, total: getTotal() } })}
+                      onClick={() => navigate('/payment', { state: { cartItems, user, total: getTotal(), sessionId } })}
                     >
                       Proceed to Payment
                     </button>

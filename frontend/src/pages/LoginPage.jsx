@@ -9,6 +9,14 @@ function LoginPage() {
   // Get session data from navigation state (if coming from QR scan)
   const sessionData = location.state;
 
+  // Ensure sessionId is stored in localStorage if it comes from navigation state
+  React.useEffect(() => {
+    if (sessionData?.sessionId) {
+      localStorage.setItem('sessionId', sessionData.sessionId);
+      console.log('SessionId stored from navigation state:', sessionData.sessionId);
+    }
+  }, [sessionData]);
+
   const handleGoogleLogin = () => {
     setIsLoading(true);
     

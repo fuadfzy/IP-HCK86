@@ -17,6 +17,7 @@ function MenuPage() {
   });
 
   const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
+  const sessionId = location.state?.sessionId || localStorage.getItem('sessionId');
 
   // Fetch menu items
   useEffect(() => {
@@ -415,7 +416,7 @@ function MenuPage() {
             <div className="d-flex gap-3 justify-content-center">
               <button 
                 className="btn btn-outline-primary"
-                onClick={() => navigate('/chat')}
+                onClick={() => navigate('/chat', { state: { user, sessionId } })}
               >
                 <i className="bi bi-robot me-2"></i>
                 AI Assistant
@@ -423,7 +424,7 @@ function MenuPage() {
               {getCartItemCount() > 0 && (
                 <button 
                   className="btn btn-success"
-                  onClick={() => navigate('/cart', { state: { cartItems, user } })}
+                  onClick={() => navigate('/cart', { state: { cartItems, user, sessionId } })}
                 >
                   <i className="bi bi-cart me-2"></i>
                   View Cart ({getCartItemCount()})
