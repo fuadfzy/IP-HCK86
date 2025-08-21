@@ -2,16 +2,8 @@ const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
 
-// Base URL untuk production/development
-const BASE_URL = 'https://tabletalk-2025.web.app'; // Production       // Add to HTML
-      htmlContent += `
-        <div class="qr-card">
-            <img src="${qrDataUrl}" alt="QR Code for Table - ${table.id}" class="qr-image">
-            <div class="table-name">Table - ${table.id}</div>
-            <div class="table-code">${table.qr_code}</div>
-            <div class="table-url">${tableUrl}</div>
-        </div>
-      `;URL
+// Base URL untuk production
+const BASE_URL = 'https://tabletalk-2025.web.app';
 
 // Table codes dari backend/tables.json
 const tableCodes = [
@@ -31,12 +23,12 @@ const tableCodes = [
 
 async function generateQRCodes() {
   // Create output directory
-  const outputDir = './output';
+  const outputDir = './output-production';
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
   }
 
-  console.log('� Generating QR Codes for TableTalk Restaurant...\n');
+  console.log('🍽️ Generating Production QR Codes for TableTalk Restaurant...\n');
 
   let htmlContent = `
 <!DOCTYPE html>
@@ -44,7 +36,7 @@ async function generateQRCodes() {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableTalk - QR Codes for Tables</title>
+    <title>TableTalk - Production QR Codes</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -64,6 +56,15 @@ async function generateQRCodes() {
             color: #6c757d;
             margin: 0;
         }
+        .production-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -78,6 +79,7 @@ async function generateQRCodes() {
             text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.2s;
+            border: 2px solid #28a745;
         }
         .qr-card:hover {
             transform: translateY(-2px);
@@ -90,8 +92,8 @@ async function generateQRCodes() {
             border-radius: 8px;
         }
         .table-name {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             color: #212529;
             margin-bottom: 8px;
         }
@@ -123,6 +125,7 @@ async function generateQRCodes() {
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #28a745;
         }
         .instructions h3 {
             color: #212529;
@@ -152,12 +155,13 @@ async function generateQRCodes() {
 </head>
 <body>
     <div class="header">
-        <h1>🍽️ TableTalk Restaurant</h1>
-        <p>QR Codes untuk Semua Meja</p>
+        <h1>🍽️ TableTalk Restaurant <span class="production-badge">PRODUCTION</span></h1>
+        <p>QR Codes untuk Semua Meja - Ready untuk Deployment</p>
+        <p><strong>URL:</strong> ${BASE_URL}</p>
     </div>
 
     <div class="instructions">
-        <h3>📱 Cara Penggunaan QR Code</h3>
+        <h3>📱 Cara Penggunaan QR Code Production</h3>
         <div class="usage-options">
             <div class="usage-option">
                 <h4>🔗 Scan Langsung dari Camera</h4>
@@ -168,6 +172,7 @@ async function generateQRCodes() {
                 <p>Customer buka website → klik "Scan QR Code" → scan table code</p>
             </div>
         </div>
+        <p><strong>⚠️ Penting:</strong> QR codes ini mengarah ke production server. Pastikan backend API sudah running di https://api.fuadfzy.space</p>
     </div>
 
     <div class="grid">
@@ -206,7 +211,7 @@ async function generateQRCodes() {
       // Add to HTML
       htmlContent += `
         <div class="qr-card">
-            <img src="${qrDataUrl}" alt="QR Code for ${table.name}" class="qr-image">
+            <img src="${qrDataUrl}" alt="QR Code for Table - ${table.id}" class="qr-image">
             <div class="table-name">Table - ${table.id}</div>
             <div class="table-code">${table.qr_code}</div>
             <div class="table-url">${tableUrl}</div>
@@ -225,16 +230,18 @@ async function generateQRCodes() {
 </html>`;
 
   // Save HTML file
-  fs.writeFileSync(path.join(outputDir, 'qr-codes-preview.html'), htmlContent);
+  fs.writeFileSync(path.join(outputDir, 'qr-codes-production.html'), htmlContent);
 
-  console.log('🎉 QR Code generation completed!');
+  console.log('\n🎉 Production QR Code generation completed!');
   console.log(`📁 Files saved in: ${path.resolve(outputDir)}`);
-  console.log(`🌐 Preview: ${path.resolve(outputDir, 'qr-codes-preview.html')}`);
+  console.log(`🌐 Preview: ${path.resolve(outputDir, 'qr-codes-production.html')}`);
   console.log(`
-💡 Usage:`);
+💡 Production Usage:`);
   console.log(`   1. Print QR codes dan tempatkan di meja`);
   console.log(`   2. Customer scan langsung → ke ${BASE_URL}/session/{table_code}`);
   console.log(`   3. Atau customer scan dari dalam app → deteksi table code`);
+  console.log(`   4. Backend API: https://api.fuadfzy.space`);
+  console.log(`   5. Frontend: ${BASE_URL}`);
 }
 
 generateQRCodes().catch(console.error);

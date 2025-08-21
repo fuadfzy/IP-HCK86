@@ -25,7 +25,7 @@ function QRSessionPage() {
 
       // Simulate API call to create session
       // In real implementation, this would call backend API
-      const response = await fetch(`http://localhost:3001/sessions`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,10 +83,6 @@ function QRSessionPage() {
     createSession();
   };
 
-  const handleManualEntry = () => {
-    navigate('/');
-  };
-
   return (
     <div className="min-vh-100 bg-dark">
       {/* Header */}
@@ -142,18 +138,12 @@ function QRSessionPage() {
                 <h2 className="h4 fw-bold mb-2 text-danger">Connection Failed</h2>
                 <p className="text-light text-opacity-75 small mb-4">{error}</p>
                 
-                <div className="d-flex flex-column gap-3">
+                <div className="text-center">
                   <button 
                     onClick={handleRetry}
                     className="btn btn-light w-100 py-3 fw-semibold"
                   >
                     Try Again
-                  </button>
-                  <button 
-                    onClick={handleManualEntry}
-                    className="btn btn-outline-light w-100 py-2"
-                  >
-                    Enter Table Manually
                   </button>
                 </div>
               </div>

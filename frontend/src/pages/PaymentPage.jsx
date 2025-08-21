@@ -54,31 +54,11 @@ function PaymentPage() {
       } else {
         // Create new order flow (existing logic)
         
-        // First, get or create a session
+        // First, check if session exists from QR scan
         let sessionId = localStorage.getItem('sessionId');
         console.log('Existing sessionId:', sessionId);
         if (!sessionId) {
-          // Create a new session with default table (table 1 for now)
-          const sessionResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/sessions`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              qr_code: 'TBL-001' // Default table for direct orders
-            })
-          });
-
-          if (!sessionResponse.ok) {
-            const errorData = await sessionResponse.json();
-            console.error('Session creation failed:', errorData);
-            throw new Error('Failed to create session');
-          }
-
-          const sessionData = await sessionResponse.json();
-          console.log('Session created:', sessionData);
-          sessionId = sessionData.id;
-          localStorage.setItem('sessionId', sessionId);
+          throw new Error('No active session found. Please scan QR code at your table first.');
         }
 
         // Then, create order with the session

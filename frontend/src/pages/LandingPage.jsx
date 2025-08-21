@@ -3,11 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import QRScanner from '../components/QRScanner';
 
 function LandingPage() {
-  const [showForm, setShowForm] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const [manualInput, setManualInput] = useState('');
   const navigate = useNavigate();
 
   // Handle QR scan - open camera scanner
@@ -30,25 +27,6 @@ function LandingPage() {
   // Close QR scanner
   const handleCloseQRScanner = () => {
     setShowQRScanner(false);
-  };
-
-  // Handle manual form submit
-  const handleManualSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!manualInput) {
-      setFormErrors({ table: "Please select a table" });
-      return;
-    }
-    
-    setFormErrors({});
-    setIsLoading(true);
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      setShowForm(false);
-      navigate('/session');
-    }, 1500);
   };
 
   return (
@@ -86,7 +64,7 @@ function LandingPage() {
             <h2 className="h5 fw-semibold mb-2">Ready to Order?</h2>
             <p className="text-light text-opacity-75 mb-4 small">Scan your table QR code to get started</p>
             
-            {/* Primary Action - QR Scan */}
+            {/* Primary Action - QR Scan Only */}
             <button 
               className="btn btn-light w-100 d-flex align-items-center justify-content-center gap-2 mb-3 fw-semibold py-3 fs-6"
               onClick={handleQrScan}
@@ -99,14 +77,9 @@ function LandingPage() {
               <span>Scan QR Code</span>
             </button>
 
-            {/* Secondary Action */}
-            <button 
-              className="btn btn-outline-light w-100 fw-medium py-2"
-              onClick={() => setShowForm(true)}
-              style={{borderRadius: '8px'}}
-            >
-              <span>Enter Table Number Manually</span>
-            </button>
+            <p className="text-light text-opacity-50 small text-center">
+              🔍 Look for the QR code on your table
+            </p>
           </div>
         </div>
       </div>
@@ -200,62 +173,6 @@ function LandingPage() {
               <span className="visually-hidden">Loading...</span>
             </div>
             <p className="fw-medium fs-6">Connecting to table...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Manual Form Modal - Mobile Optimized */}
-      {showForm && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3" style={{zIndex: 1055}}>
-          <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50" 
-               onClick={() => setShowForm(false)}></div>
-          
-          <div className="bg-white rounded-4 p-4 w-100 position-relative shadow-lg" style={{maxWidth: '350px'}}>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-semibold mb-0">Select Your Table</h5>
-              <button 
-                className="btn-close"
-                onClick={() => setShowForm(false)}
-                type="button"
-                aria-label="Close"
-              ></button>
-            </div>
-            
-            <form onSubmit={handleManualSubmit}>
-              <div className="mb-3">
-                <label className="form-label fw-medium small">Table Number</label>
-                <select 
-                  className={`form-select ${formErrors.table ? 'is-invalid' : ''}`}
-                  value={manualInput}
-                  onChange={(e) => setManualInput(e.target.value)}
-                >
-                  <option value="">Choose your table</option>
-                  <option value="table_1">Table 1 - Window Side</option>
-                  <option value="table_2">Table 2 - Garden View</option>
-                  <option value="table_3">Table 3 - Private Booth</option>
-                  <option value="table_4">Table 4 - Bar Counter</option>
-                  <option value="table_5">Table 5 - Outdoor Terrace</option>
-                </select>
-                {formErrors.table && (
-                  <div className="invalid-feedback">{formErrors.table}</div>
-                )}
-              </div>
-
-              <button 
-                type="submit" 
-                className="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="spinner-border spinner-border-sm"></div>
-                    <span>Connecting...</span>
-                  </>
-                ) : (
-                  <span>Connect to Table</span>
-                )}
-              </button>
-            </form>
           </div>
         </div>
       )}
