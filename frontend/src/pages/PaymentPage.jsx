@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { createOrder } from '../features/orders/orderSlice';
 
 function PaymentPage() {
   const navigate = useNavigate();
@@ -16,6 +18,15 @@ function PaymentPage() {
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('PaymentPage - Location state:', location.state);
+    console.log('PaymentPage - ExistingOrderId:', existingOrderId);
+    console.log('PaymentPage - OrderItems:', orderItems);
+    console.log('PaymentPage - CartItems:', cartItems);
+    console.log('PaymentPage - Total:', total);
+  }, []);
 
   // Redirect if no items to pay for
   useEffect(() => {
@@ -198,6 +209,9 @@ function PaymentPage() {
   };
 
   const getTotalItems = () => {
+    if (existingOrderId && orderItems.length > 0) {
+      return orderItems.reduce((total, item) => total + item.quantity, 0);
+    }
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
@@ -261,7 +275,9 @@ function PaymentPage() {
             ))}
             
             <div className="d-flex justify-content-between align-items-center pt-3 mt-3 border-top border-secondary border-opacity-25">
-              <h5 className="text-light mb-0">Total ({getTotalItems()} items)</h5>
+              <h5 className="text-light mb-0">
+                Total ({existingOrderId ? orderItems.reduce((sum, item) => sum + item.quantity, 0) : getTotalItems()} items)
+              </h5>
               <h4 className="text-success fw-bold mb-0">
                 Rp {total.toLocaleString('id-ID')}
               </h4>
@@ -305,7 +321,7 @@ function PaymentPage() {
               <button 
                 className="btn btn-success fw-semibold py-3"
                 onClick={handlePayment}
-                disabled={isProcessing || cartItems.length === 0}
+                disabled={isProcessing || (!existingOrderId && cartItems.length === 0)}
               >
                 {isProcessing ? (
                   <div className="d-flex align-items-center justify-content-center gap-2">

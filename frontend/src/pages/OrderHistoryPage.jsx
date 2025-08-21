@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchOrders, clearError, clearLastAction } from '../features/orders/orderSlice';
+import OrderCard from '../components/OrderCard';
 import CustomModal from '../components/CustomModal';
 
 function OrderHistoryPage() {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [deletingOrderId, setDeletingOrderId] = useState(null);
+  const location = useLocation();
+  const dispatch = useDispatch();
   
+  // Redux state - useSelector untuk mengambil data dari store
+  const { list: orders, loading, error, lastAction } = useSelector((state) => state.orders);
+  
+  const user = location.state?.user || JSON.parse(localStorage.getItem('user') || '{}');
+  const sessionId = localStorage.getItem('sessionId');
+
   // Modal states
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({
@@ -22,149 +29,52 @@ function OrderHistoryPage() {
     isLoading: false
   });
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-
+  // useEffect untuk fetch data saat component mount
   useEffect(() => {
-    fetchOrders();
+    // 1. Dispatch fetchOrders action - seperti di HomePage lecture
+    dispatch(fetchOrders(sessionId));
     
     // Auto-refresh every 5 seconds to catch payment status updates
-    const interval = setInterval(fetchOrders, 5000);
+    const interval = setInterval(() => {
+      dispatch(fetchOrders(sessionId));
+    }, 5000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [dispatch, sessionId]);
 
-  const fetchOrders = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
-      // For now, we'll get orders from a specific session or user
-      // Since we don't have user-specific orders, we'll show recent orders
-      const sessionId = localStorage.getItem('sessionId');
-      
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/orders${sessionId ? `?session_id=${sessionId}` : ''}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+  // Handle Redux lastAction untuk show notifications
+  useEffect(() => {
+    if (lastAction === 'delete_success') {
+      setModalConfig({
+        type: 'success',
+        title: 'Order Deleted',
+        message: 'Order has been successfully deleted.',
+        confirmText: 'OK',
+        showCancel: false,
+        onConfirm: () => {
+          setShowModal(false);
+          dispatch(clearLastAction());
+        },
+        isLoading: false
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch orders');
-      }
-
-      const data = await response.json();
-      setOrders(data);
-    } catch (err) {
-      console.error('Error fetching orders:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'pending': { color: 'warning', text: 'Pending' },
-      'paid': { color: 'success', text: 'Paid' },
-      'failed': { color: 'danger', text: 'Failed' },
-      'cancelled': { color: 'secondary', text: 'Cancelled' }
-    };
-    
-    const config = statusConfig[status] || { color: 'secondary', text: status };
-    
-    return (
-      <span className={`badge bg-${config.color} bg-opacity-25 text-${config.color} border border-${config.color} border-opacity-50`}>
-        {config.text}
-      </span>
-    );
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const handleDeleteOrder = async (orderId) => {
-    // Show confirmation modal
-    setModalConfig({
-      type: 'warning',
-      title: 'Delete Order',
-      message: `Are you sure you want to delete Order #${orderId}? This action cannot be undone.`,
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      showCancel: true,
-      onConfirm: () => confirmDeleteOrder(orderId),
-      isLoading: false
-    });
-    setShowModal(true);
-  };
-
-  const confirmDeleteOrder = async (orderId) => {
-    // Update modal to loading state
-    setModalConfig(prev => ({ ...prev, isLoading: true }));
-    setDeletingOrderId(orderId);
-    
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/orders/${orderId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      setShowModal(true);
+    } else if (lastAction === 'delete_error') {
+      setModalConfig({
+        type: 'danger',
+        title: 'Delete Failed',
+        message: error || 'Failed to delete order. Please try again.',
+        confirmText: 'OK',
+        showCancel: false,
+        onConfirm: () => {
+          setShowModal(false);
+          dispatch(clearError());
+          dispatch(clearLastAction());
+        },
+        isLoading: false
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete order');
-      }
-
-      // Remove order from state
-      setOrders(orders.filter(order => order.id !== orderId));
-      
-      // Show success modal
-      setShowModal(false);
-      setTimeout(() => {
-        setModalConfig({
-          type: 'success',
-          title: 'Order Deleted',
-          message: 'Order has been successfully deleted.',
-          confirmText: 'OK',
-          showCancel: false,
-          onConfirm: () => setShowModal(false),
-          isLoading: false
-        });
-        setShowModal(true);
-      }, 300);
-      
-    } catch (err) {
-      console.error('Error deleting order:', err);
-      
-      // Show error modal
-      setShowModal(false);
-      setTimeout(() => {
-        setModalConfig({
-          type: 'danger',
-          title: 'Delete Failed',
-          message: err.message || 'Failed to delete order. Please try again.',
-          confirmText: 'OK',
-          showCancel: false,
-          onConfirm: () => setShowModal(false),
-          isLoading: false
-        });
-        setShowModal(true);
-      }, 300);
-    } finally {
-      setDeletingOrderId(null);
+      setShowModal(true);
     }
-  };
+  }, [lastAction, error, dispatch]);
 
   const handleEditOrder = (order) => {
     // Convert order items to cart format and navigate to cart
@@ -172,7 +82,7 @@ function OrderHistoryPage() {
       id: item.MenuItem.id,
       name: item.MenuItem.name,
       price: item.MenuItem.price,
-      image: item.MenuItem.image,
+      image_url: item.MenuItem.image_url,
       quantity: item.quantity
     }));
     
@@ -182,25 +92,27 @@ function OrderHistoryPage() {
         editMode: true,
         orderId: order.id,
         cartItems: cartItems,
+        user,
         message: `Editing Order #${order.id}` 
       } 
     });
   };
 
   const handlePayOrder = (order) => {
+    // Calculate total items for display
+    const totalItems = order.OrderItems.reduce((sum, item) => sum + item.quantity, 0);
+    
     // Navigate to payment page with existing order
     navigate('/payment', {
       state: {
         existingOrderId: order.id,
-        total: order.total,
+        total: parseInt(order.total, 10),
         user,
-        orderItems: order.OrderItems
+        orderItems: order.OrderItems,
+        cartItems: [], // Empty since this is existing order
+        totalItems: totalItems
       }
     });
-  };
-
-  const canModifyOrder = (status) => {
-    return status === 'pending';
   };
 
   return (
@@ -273,83 +185,14 @@ function OrderHistoryPage() {
 
         {/* Orders List */}
         {!loading && !error && orders.length > 0 && (
-          <div>
-            {orders.map((order, index) => (
-              <div key={order.id} className={`bg-light bg-opacity-10 rounded-4 p-4 border border-secondary border-opacity-25 ${index < orders.length - 1 ? 'mb-4' : ''}`}>
-                <div className="d-flex justify-content-between align-items-start mb-3">
-                  <div>
-                    <h5 className="text-light fw-bold mb-1">Order #{order.id}</h5>
-                    <small className="text-muted">{formatDate(order.createdAt)}</small>
-                  </div>
-                  {getStatusBadge(order.status)}
-                </div>
-
-                {/* Order Items */}
-                {order.OrderItems && order.OrderItems.length > 0 && (
-                  <div className="mb-3">
-                    <h6 className="text-light mb-2">Items:</h6>
-                    {order.OrderItems.map((item, index) => (
-                      <div key={index} className="d-flex justify-content-between text-sm mb-1">
-                        <span className="text-light">
-                          {item.MenuItem ? item.MenuItem.name : 'Unknown Item'} x{item.quantity}
-                        </span>
-                        <span className="text-muted">
-                          Rp {(item.total_price || 0).toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3">
-                  <span className="text-light fw-bold">Total</span>
-                  <span className="text-success fw-bold">
-                    Rp {(order.total || 0).toLocaleString('id-ID')}
-                  </span>
-                </div>
-
-                {/* Action Buttons for Pending Orders */}
-                {canModifyOrder(order.status) && (
-                  <div className="d-flex flex-column gap-2 mt-3 pt-3 border-top border-secondary border-opacity-25">
-                    {/* Primary Action: Pay Now */}
-                    <button 
-                      className="btn btn-success btn-sm"
-                      onClick={() => handlePayOrder(order)}
-                    >
-                      <i className="bi bi-credit-card me-2"></i>
-                      Pay Now - Rp {(order.total || 0).toLocaleString('id-ID')}
-                    </button>
-                    
-                    {/* Secondary Actions */}
-                    <div className="d-flex gap-2">
-                      <button 
-                        className="btn btn-outline-warning btn-sm flex-fill"
-                        onClick={() => handleEditOrder(order)}
-                      >
-                        <i className="bi bi-pencil me-1"></i>
-                        Edit
-                      </button>
-                      <button 
-                        className="btn btn-outline-danger btn-sm flex-fill"
-                        onClick={() => handleDeleteOrder(order.id)}
-                        disabled={deletingOrderId === order.id}
-                      >
-                        {deletingOrderId === order.id ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                            Deleting...
-                          </>
-                        ) : (
-                          <>
-                            <i className="bi bi-trash me-1"></i>
-                            Delete
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+          <div className="d-flex flex-column gap-3">
+            {orders.map((order) => (
+              <OrderCard 
+                key={order.id} 
+                order={order}
+                onEdit={handleEditOrder}
+                onPay={handlePayOrder}
+              />
             ))}
           </div>
         )}

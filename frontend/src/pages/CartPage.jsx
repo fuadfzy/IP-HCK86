@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateOrder } from '../features/orders/orderSlice';
 import CustomModal from '../components/CustomModal';
 
 function CartPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  
+  // Redux state
+  const { loading, error, lastAction } = useSelector((state) => state.orders);
   
   // Check if we're in edit mode - ONLY if explicitly passed via state
   const isEditMode = location.state?.editMode === true;
@@ -75,85 +81,58 @@ function CartPage() {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Handle update order (for edit mode)
+  // Handle update order (for edit mode) - menggunakan Redux
   const handleUpdateOrder = async () => {
     if (!isEditMode || !editingOrderId) {
       console.error('Not in edit mode or missing order ID');
       return;
     }
     
-    // Show loading modal
-    setModalConfig({
-      type: 'info',
-      title: 'Updating Order',
-      message: 'Please wait while we update your order...',
-      confirmText: 'Updating...',
-      showCancel: false,
-      onConfirm: null,
-      isLoading: true
-    });
-    setShowModal(true);
-    
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/orders/${editingOrderId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      // Dispatch updateOrder action - seperti di lecture redux
+      await dispatch(updateOrder({
+        orderId: editingOrderId,
+        orderData: {
           items: cartItems.map(item => ({
             menu_item_id: item.id,
             quantity: item.quantity
           }))
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update order');
-      }
+        }
+      })).unwrap(); // unwrap untuk handle promise
 
       // Clear edit mode and cart
       localStorage.removeItem('editingOrderId');
       localStorage.removeItem('cartItems');
       
       // Show success modal
-      setShowModal(false);
-      setTimeout(() => {
-        setModalConfig({
-          type: 'success',
-          title: 'Order Updated!',
-          message: 'Your order has been successfully updated.',
-          confirmText: 'View Orders',
-          showCancel: false,
-          onConfirm: () => {
-            setShowModal(false);
-            navigate('/orders');
-          },
-          isLoading: false
-        });
-        setShowModal(true);
-      }, 300);
+      setModalConfig({
+        type: 'success',
+        title: 'Order Updated!',
+        message: 'Your order has been successfully updated.',
+        confirmText: 'View Orders',
+        showCancel: false,
+        onConfirm: () => {
+          setShowModal(false);
+          navigate('/orders');
+        },
+        isLoading: false
+      });
+      setShowModal(true);
       
     } catch (error) {
       console.error('Error updating order:', error);
       
       // Show error modal
-      setShowModal(false);
-      setTimeout(() => {
-        setModalConfig({
-          type: 'danger',
-          title: 'Update Failed',
-          message: error.message || 'Failed to update order. Please try again.',
-          confirmText: 'OK',
-          showCancel: false,
-          onConfirm: () => setShowModal(false),
-          isLoading: false
-        });
-        setShowModal(true);
-      }, 300);
+      setModalConfig({
+        type: 'danger',
+        title: 'Update Failed',
+        message: error.message || 'Failed to update order. Please try again.',
+        confirmText: 'OK',
+        showCancel: false,
+        onConfirm: () => setShowModal(false),
+        isLoading: false
+      });
+      setShowModal(true);
     }
   };
 
