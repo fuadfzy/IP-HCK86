@@ -1,4 +1,8 @@
-require('dotenv').config();
+// Only load dotenv in development
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
@@ -94,7 +98,7 @@ app.use('/orders', ordersRouter);
 app.use('/payments', paymentsRouter);
 app.use('/ai', require('./routes/ai'));
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   const url = process.env.NODE_ENV === 'production' 
     ? process.env.BACKEND_URL || `https://your-aws-app.com`
