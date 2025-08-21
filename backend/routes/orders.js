@@ -103,4 +103,83 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// PUT /orders/:id - edit order (only if status is pending)
+router.put('/:id', async (req, res) => {
+  const { items } = req.body;
+  // items: [{ menu_item_id, quantity }]
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'items are required' });
+  }
+  
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    
+    // Only allow editing pending orders
+    if (order.status !== 'pending') {
+      return res.status(400).json({ 
+        error: `Cannot edit order with status: ${order.status}. Only pending orders can be edited.` 
+      });
+    }
+
+    // Calculate new total
+    let total = 0;
+    const newOrderItems = [];
+    for (const item of items) {
+      const menuItem = await MenuItem.findByPk(item.menu_item_id);
+      if (!menuItem) return res.status(404).json({ error: `Menu item ${item.menu_item_id} not found` });
+      const total_price = parseFloat(menuItem.price) * item.quantity;
+      total += total_price;
+      newOrderItems.push({
+        order_id: order.id,
+        menu_item_id: item.menu_item_id,
+        quantity: item.quantity,
+        total_price
+      });
+    }
+
+    // Delete existing order items
+    await OrderItem.destroy({ where: { order_id: order.id } });
+
+    // Create new order items
+    for (const item of newOrderItems) {
+      await OrderItem.create(item);
+    }
+
+    // Update order total
+    await order.update({ total });
+
+    res.json({ message: 'Order updated successfully', order_id: order.id, total, status: order.status });
+  } catch (err) {
+    console.error('Edit order error:', err);
+    res.status(500).json({ error: 'Failed to update order' });
+  }
+});
+
+// DELETE /orders/:id - delete order (only if status is pending)
+router.delete('/:id', async (req, res) => {
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    
+    // Only allow deleting pending orders
+    if (order.status !== 'pending') {
+      return res.status(400).json({ 
+        error: `Cannot delete order with status: ${order.status}. Only pending orders can be deleted.` 
+      });
+    }
+
+    // Delete order items first (due to foreign key constraint)
+    await OrderItem.destroy({ where: { order_id: order.id } });
+    
+    // Delete order
+    await order.destroy();
+
+    res.json({ message: 'Order deleted successfully', order_id: order.id });
+  } catch (err) {
+    console.error('Delete order error:', err);
+    res.status(500).json({ error: 'Failed to delete order' });
+  }
+});
+
 module.exports = router;

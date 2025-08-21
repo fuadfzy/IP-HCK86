@@ -45,11 +45,19 @@ const authenticateJWT = require('./middleware/authenticateJWT');
 // Auth route (unprotected)
 app.use('/auth', require('./routes/auth'));
 
+// Sessions route (unprotected - needed for QR code scanning)
+app.use('/sessions', sessionsRouter);
+
+// Payment redirect routes (unprotected - for Midtrans redirects)
+app.use('/payment', require('./routes/paymentRedirect'));
+
+// Payment notification (unprotected - for Midtrans webhooks)
+app.use('/payments/notification', require('./routes/notification'));
+
 // Protect all other API routes
 app.use(authenticateJWT);
 app.use('/menu-items', menuItemsRouter);
 app.use('/tables', tablesRouter);
-app.use('/sessions', sessionsRouter);
 app.use('/orders', ordersRouter);
 app.use('/payments', paymentsRouter);
 app.use('/order-items', orderItemsRouter);

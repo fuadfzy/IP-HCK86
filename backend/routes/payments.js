@@ -10,6 +10,13 @@ const snap = new midtransClient.Snap({
   clientKey: process.env.MIDTRANS_CLIENT_KEY || 'YOUR_CLIENT_KEY',
 });
 
+// Setup Midtrans Core API for notification handling
+const core = new midtransClient.CoreApi({
+  isProduction: false,
+  serverKey: process.env.MIDTRANS_SERVER_KEY || 'YOUR_SERVER_KEY',
+  clientKey: process.env.MIDTRANS_CLIENT_KEY || 'YOUR_CLIENT_KEY',
+});
+
 // POST /payments - create payment transaction for an order
 router.post('/', async (req, res) => {
   const { order_id } = req.body;
@@ -26,7 +33,11 @@ router.post('/', async (req, res) => {
       credit_card: {
         secure: true
       },
-      // You can add customer details here if needed
+      callbacks: {
+        finish: `${process.env.BACKEND_URL || 'http://localhost:3001'}/payment/finish`,
+        unfinish: `${process.env.BACKEND_URL || 'http://localhost:3001'}/payment/unfinish`,
+        error: `${process.env.BACKEND_URL || 'http://localhost:3001'}/payment/error`
+      }
     };
 
     const transaction = await snap.createTransaction(parameter);
@@ -40,15 +51,28 @@ router.post('/', async (req, res) => {
 router.post('/notification', express.json(), async (req, res) => {
   try {
     const notification = req.body;
+    console.log('=== Midtrans Notification Received ===');
+    console.log('Notification body:', JSON.stringify(notification, null, 2));
+    
     // Midtrans order_id format: ORDER-<orderId>-<timestamp>
     const orderIdMatch = notification.order_id && notification.order_id.match(/^ORDER-(\d+)-/);
-    if (!orderIdMatch) return res.status(400).send('Invalid order_id');
+    if (!orderIdMatch) {
+      console.log('Invalid order_id format:', notification.order_id);
+      return res.status(400).send('Invalid order_id');
+    }
+    
     const orderId = parseInt(orderIdMatch[1], 10);
+    console.log('Extracted order ID:', orderId);
+    
     const order = await Order.findByPk(orderId);
-    if (!order) return res.status(404).send('Order not found');
+    if (!order) {
+      console.log('Order not found for ID:', orderId);
+      return res.status(404).send('Order not found');
+    }
 
     // Update order status based on transaction_status
     let newStatus = order.status;
+    const oldStatus = order.status;
     switch (notification.transaction_status) {
       case 'capture':
       case 'settlement':
@@ -63,9 +87,15 @@ router.post('/notification', express.json(), async (req, res) => {
         newStatus = 'failed';
         break;
     }
+    
+    console.log(`Order ${orderId} status change: ${oldStatus} → ${newStatus}`);
     await order.update({ status: newStatus });
+    console.log('Order status updated successfully');
+    
     res.status(200).send('OK');
   } catch (err) {
+    console.error('=== Notification Processing Error ===');
+    console.error('Error:', err);
     res.status(500).send('Error processing notification');
   }
 });
