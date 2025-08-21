@@ -11,6 +11,24 @@ const sessionsRouter = require('./routes/sessions');
 const ordersRouter = require('./routes/orders');
 const paymentsRouter = require('./routes/payments');
 
+// Validate required environment variables
+const requiredEnvVars = [
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'JWT_SECRET'
+];
+
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:');
+  missingEnvVars.forEach(envVar => {
+    console.error(`   - ${envVar}`);
+  });
+  console.error('💡 Please set these variables in your deployment environment');
+  process.exit(1);
+}
+
 // Passport Google OAuth setup
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -79,7 +97,7 @@ app.use('/ai', require('./routes/ai'));
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   const url = process.env.NODE_ENV === 'production' 
-    ? process.env.BACKEND_URL || `https://your-app.railway.app`
+    ? process.env.BACKEND_URL || `https://your-aws-app.com`
     : `http://localhost:${PORT}`;
   console.log(`🚀 TableTalk Backend server running at \x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);

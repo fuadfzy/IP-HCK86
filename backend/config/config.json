@@ -12,17 +12,9 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "postgres.xtroxhwokiqveajimeir",
-    "password": "6YGaLhF37Kx45zy",
-    "database": "postgres",
-    "host": "aws-1-ap-southeast-1.pooler.supabase.com",
-    "port": 6543,
-    "dialect": "postgres",
-    "dialectOptions": {
-      "ssl": {
-        "require": true,
-        "rejectUnauthorized": false
-      }
-    }
+    "username": "postgres",
+    "database": "restaurant_ordering",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   }
 }

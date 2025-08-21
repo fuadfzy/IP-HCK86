@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "npm ci --only=production",
     "test": "jest --runInBand --detectOpenHandles",
     "test:coverage": "jest --runInBand --detectOpenHandles --coverage --coverageReporters=text --coverageReporters=lcov",
     "test:db": "node test-db.js",
