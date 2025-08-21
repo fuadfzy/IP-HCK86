@@ -265,6 +265,22 @@ npm test
 - Integration testing
 - User flow testing
 
+## 🚀 Deployment
+
+### Quick Deploy to Railway
+```bash
+# Run deployment script
+./deploy.sh
+```
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### Supported Platforms
+- **Railway** (Recommended - Free tier available)
+- **Render** (Alternative - Free tier available)
+- **Heroku** (Paid)
+- **VPS/DigitalOcean** (Manual setup)
+
 ## 🚀 Deployment Considerations
 
 ### Production Setup

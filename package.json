@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
     "test": "jest --runInBand --detectOpenHandles",
-    "test:coverage": "jest --runInBand --detectOpenHandles --coverage --coverageReporters=text --coverageReporters=lcov"
+    "test:coverage": "jest --runInBand --detectOpenHandles --coverage --coverageReporters=text --coverageReporters=lcov",
+    "db:migrate": "cd backend && npx sequelize-cli db:migrate",
+    "db:seed": "cd backend && npx sequelize-cli db:seed:all"
   },
   "jest": {
     "testEnvironment": "node",

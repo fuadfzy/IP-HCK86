@@ -33,12 +33,32 @@ passport.use(new GoogleStrategy({
 }));
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// CORS configuration for production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.FRONTEND_URL, process.env.BACKEND_URL]
+    : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(passport.initialize());
 
 
 const authenticateJWT = require('./middleware/authenticateJWT');
+
+// Health check (unprotected)
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'TableTalk API is up and running. do your thing.',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // Auth route (unprotected)
 app.use('/auth', require('./routes/auth'));
@@ -56,13 +76,12 @@ app.use('/orders', ordersRouter);
 app.use('/payments', paymentsRouter);
 app.use('/ai', require('./routes/ai'));
 
-// Health check
-app.get('/', (req, res) => {
-  res.json({ status: 'API is running' });
-});
-
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
-  console.log(`Backend server running at \x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\`);
+app.listen(PORT, '0.0.0.0', () => {
+  const url = process.env.NODE_ENV === 'production' 
+    ? process.env.BACKEND_URL || `https://your-app.railway.app`
+    : `http://localhost:${PORT}`;
+  console.log(`🚀 TableTalk Backend server running at \x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🗄️  Database: ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}`);
 });
