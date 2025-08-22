@@ -93,22 +93,6 @@ PORT=3001
 NODE_ENV=development
 ```
 
-## 🚀 Deployment
-
-### Railway (Recommended)
-1. Push to GitHub
-2. Go to [railway.app](https://railway.app)
-3. Create new project from GitHub
-4. Select `backend` folder as root directory
-5. Add PostgreSQL database
-6. Configure environment variables
-7. Deploy!
-
-### Other Platforms
-- **Render**: Similar to Railway
-- **Heroku**: Use Procfile
-- **VPS**: Manual setup with PM2
-
 ## 🧪 Testing
 
 ```bash
