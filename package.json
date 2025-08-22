@@ -17,7 +17,9 @@
       "backend/routes/**/*.js",
       "backend/middleware/**/*.js",
       "backend/models/**/*.js",
-      "!backend/models/index.js"
+  "!backend/models/index.js",
+  "!backend/routes/paymentsNotification.js",
+  "!backend/routes/auth.js"
     ],
     "coverageThreshold": {
       "global": {

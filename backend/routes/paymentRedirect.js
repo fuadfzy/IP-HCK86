@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+// Frontend base URL for redirection (prefer env, fallback by environment)
+const FRONTEND_URL = process.env.FRONTEND_URL
+  || (process.env.NODE_ENV === 'test' ? 'http://localhost:5173' : 'https://tabletalk-2025.web.app');
+
 // Payment redirect handlers - serve simple HTML pages
 router.get('/finish', (req, res) => {
-  const { transaction_status, order_id } = req.query;
-  
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -18,7 +20,7 @@ router.get('/finish', (req, res) => {
         <script>
           // Redirect to frontend with payment data
           const params = new URLSearchParams(window.location.search);
-          const frontendUrl = 'http://localhost:5173/payment/finish?' + params.toString();
+          const frontendUrl = '${FRONTEND_URL}/payment/finish?' + params.toString();
           window.location.replace(frontendUrl);
         </script>
       </div>
@@ -28,8 +30,6 @@ router.get('/finish', (req, res) => {
 });
 
 router.get('/unfinish', (req, res) => {
-  const { transaction_status, order_id } = req.query;
-  
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -43,7 +43,7 @@ router.get('/unfinish', (req, res) => {
         <script>
           // Redirect to frontend with payment data
           const params = new URLSearchParams(window.location.search);
-          const frontendUrl = 'http://localhost:5173/payment/unfinish?' + params.toString();
+          const frontendUrl = '${FRONTEND_URL}/payment/unfinish?' + params.toString();
           window.location.replace(frontendUrl);
         </script>
       </div>
@@ -53,8 +53,6 @@ router.get('/unfinish', (req, res) => {
 });
 
 router.get('/error', (req, res) => {
-  const { transaction_status, order_id } = req.query;
-  
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -68,7 +66,7 @@ router.get('/error', (req, res) => {
         <script>
           // Redirect to frontend with payment data
           const params = new URLSearchParams(window.location.search);
-          const frontendUrl = 'http://localhost:5173/payment/error?' + params.toString();
+          const frontendUrl = '${FRONTEND_URL}/payment/error?' + params.toString();
           window.location.replace(frontendUrl);
         </script>
       </div>
