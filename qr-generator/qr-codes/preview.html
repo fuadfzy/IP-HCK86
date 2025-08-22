@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTalk QR Codes - Restaurant Tables</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .qr-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        .qr-card:hover {
+            transform: translateY(-5px);
+        }
+        .qr-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .qr-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .qr-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+        .qr-content {
+            padding: 30px;
+            text-align: center;
+        }
+        .qr-content img {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+        }
+        .qr-info {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        .instructions h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .instructions ol {
+            color: #34495e;
+            line-height: 1.8;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        @media print {
+            .qr-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ TableTalk QR Codes</h1>
+            <p>Restaurant Table QR Codes for Mobile Ordering System</p>
+        </div>
+        
+        <div class="qr-grid">
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 1</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-1-TBL-001.png" alt="QR Code for TBL-001">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-001<br>
+                        <strong>File:</strong> table-1-TBL-001.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 2</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-2-TBL-002.png" alt="QR Code for TBL-002">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-002<br>
+                        <strong>File:</strong> table-2-TBL-002.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 3</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-3-TBL-003.png" alt="QR Code for TBL-003">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-003<br>
+                        <strong>File:</strong> table-3-TBL-003.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 4</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-4-TBL-004.png" alt="QR Code for TBL-004">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-004<br>
+                        <strong>File:</strong> table-4-TBL-004.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 5</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-5-TBL-005.png" alt="QR Code for TBL-005">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-005<br>
+                        <strong>File:</strong> table-5-TBL-005.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 6</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-6-TBL-006.png" alt="QR Code for TBL-006">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-006<br>
+                        <strong>File:</strong> table-6-TBL-006.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 7</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-7-TBL-007.png" alt="QR Code for TBL-007">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-007<br>
+                        <strong>File:</strong> table-7-TBL-007.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 8</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-8-TBL-008.png" alt="QR Code for TBL-008">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-008<br>
+                        <strong>File:</strong> table-8-TBL-008.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 9</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-9-TBL-009.png" alt="QR Code for TBL-009">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-009<br>
+                        <strong>File:</strong> table-9-TBL-009.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 10</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-10-TBL-010.png" alt="QR Code for TBL-010">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-010<br>
+                        <strong>File:</strong> table-10-TBL-010.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 11</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-11-TBL-011.png" alt="QR Code for TBL-011">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-011<br>
+                        <strong>File:</strong> table-11-TBL-011.png
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-card">
+                <div class="qr-header">
+                    <h3>Table 12</h3>
+                    <p>Scan to start ordering</p>
+                </div>
+                <div class="qr-content">
+                    <img src="table-12-TBL-012.png" alt="QR Code for TBL-012">
+                    <div class="qr-info">
+                        <strong>Code:</strong> TBL-012<br>
+                        <strong>File:</strong> table-12-TBL-012.png
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="instructions">
+            <h2>📋 Instructions for Restaurant Staff</h2>
+            <ol>
+                <li><strong>Print QR Codes:</strong> Print each QR code at actual size (recommended 8x8 cm minimum)</li>
+                <li><strong>Laminate:</strong> Laminate each QR code for durability and easy cleaning</li>
+                <li><strong>Place on Tables:</strong> Place QR code stands/cards on each table clearly visible to customers</li>
+                <li><strong>Test Scanning:</strong> Test each QR code with a phone camera to ensure they work properly</li>
+                <li><strong>Customer Instructions:</strong> Train staff to help customers scan QR codes if needed</li>
+            </ol>
+            
+            <h3>🔧 Technical Info:</h3>
+            <ul>
+                <li><strong>QR Format:</strong> Plain text containing table codes (TBL-001, TBL-002, etc.)</li>
+                <li><strong>Image Size:</strong> 512x512 pixels for high quality printing</li>
+                <li><strong>Backend Integration:</strong> These codes work with the TableTalk API session system</li>
+                <li><strong>Customer Flow:</strong> Scan QR → Create Session → Login → Order → Pay</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

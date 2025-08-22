@@ -1,0 +1,147 @@
+/* Mobile Optimization CSS - Mobile First Container */
+
+/* Mobile App Container - Updated for common phone resolutions */
+.mobile-app-container {
+  max-width: 390px; /* iPhone 14 Pro standard width */
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Desktop: Add side borders to simulate mobile */
+@media (min-width: 768px) {
+  body {
+    background: #f8f9fa; /* Light gray background on desktop */
+  }
+  
+  .mobile-app-container {
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    box-shadow: 0 0 30px rgba(0,0,0,0.15);
+  }
+}
+
+/* Text shadow utility */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Safe area untuk mobile notch */
+@supports (padding: max(0px)) {
+  .navbar {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+}
+
+/* Touch friendly buttons */
+@media (max-width: 767.98px) {
+  .btn {
+    min-height: 44px; /* iOS minimum touch target */
+  }
+  
+  .btn-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Smooth scroll for mobile */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, select, textarea {
+  font-size: 16px;
+}
+
+@media (max-width: 767.98px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Override Bootstrap container behavior for mobile-first */
+.container-fluid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Ensure full width within mobile container */
+.mobile-app-container .container,
+.mobile-app-container .container-fluid {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* QR Scanner animations */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer effect for menu cards - only on hover */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.shimmer-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.05) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: none;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.shimmer-effect:hover::before {
+  animation: shimmer 1.5s infinite ease-in-out;
+  opacity: 1;
+}
+
+.shimmer-effect:hover {
+  transform: translateY(-2px);
+}
+
+.shimmer-effect > * {
+  position: relative;
+  z-index: 2;
+}
